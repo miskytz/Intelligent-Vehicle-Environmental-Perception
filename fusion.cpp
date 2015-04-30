@@ -16,8 +16,8 @@
 #include <boost/thread/mutex.hpp>  
 #include <boost/bind.hpp>  
 #include <tchar.h>
-#include <gl\glut.h> 
-
+#include <gl/freeglut.h> //使用freeglut;
+//#include <gl/glut.h> //使用glut;
 //****************************************//
 IbeoLidar Fleft;
 IbeoLidar FRight;
@@ -80,10 +80,7 @@ void IbeoThreadFRight()
 {
 	//**前面右边多线激光雷达**//
 	FRight.beginScan(FrontRight);
-	cerr<<"TempIbeoData.m_LidarScanFLeft " << TempIbeoData.m_LidarScanFLeft.size()<< std::endl;
-	cerr<<"TempIbeoData.m_LidarObjectFLeft"<<TempIbeoData.m_LidarObjectFLeft.size()<<endl;
-	cerr<<"TempIbeoData.m_LidarScanFRight"<<TempIbeoData.m_LidarScanFRight.size()<<endl;
-	cerr<<"TempIbeoData.m_LidarObjectFRight"<<TempIbeoData.m_LidarObjectFRight.size()<<endl;
+	cout<<"i am working"<<endl;
 }
 
 
@@ -118,12 +115,12 @@ void runLidarBR()
 /************************************************************************/
 void myDisplay(void)  
 {   
-	glFlush();  
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPointSize(1.0f);
-
-	IbeoThreadFLeft();
-	IbeoThreadFRight();	
+	//boost::thread_group grp;
+	//grp.create_thread(&IbeoThreadFLeft);  // 使用create_thread 
+	//grp.create_thread(&IbeoThreadFRight);  // 使用add_thread
+	//grp.join_all();
 	/* 在这里使用 glVertex*系列函数 ;*/
 	list<LidarData>::iterator i;
 	glBegin( GL_POINTS);
@@ -141,19 +138,37 @@ void myDisplay(void)
 		glVertex2f(drawX/500, drawY/500);
 		glVertex2f(0,0);
 	}
-	
 	glEnd();
 	glFlush();
+	glutSwapBuffers();
 }  
+
+
 int draw_main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);  
-	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE );  // 修改了参数为 GLUT_DOUBLE;
 	glutInitWindowPosition(100, 100);  
 	glutInitWindowSize(500, 500);  
 	glutCreateWindow("第一个OpenGL程序");  
-	glutDisplayFunc(&myDisplay);  
-	glutMainLoop();  
+	glutDisplayFunc(&myDisplay); 
+
+	clock_t t_start; /* start time when test starts */ 
+	clock_t t_end; /* end time when test ends */ 
+	while(true)
+	{
+		t_start = clock(); /* get start time */ 
+		glutMainLoopEvent();
+		boost::thread_group grp;
+		grp.create_thread(&IbeoThreadFLeft);  // 使用create_thread 
+		grp.create_thread(&IbeoThreadFRight);
+		grp.join_all();
+		glutPostRedisplay();
+		t_end = clock();/* get end time */ 
+		printf("time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 
+	}
+
+//	glutMainLoop();  
 	return 0;
 }
 	
@@ -161,14 +176,9 @@ int draw_main(int argc, char *argv[])
 
 
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-	return 0;
-}
+
 int main(int argc, char *argv[])
 {
-	clock_t t_start; /* start time when test starts */ 
-	clock_t t_end; /* end time when test ends */ 
 	
 	
 	///*    雷达初始化   */
@@ -178,28 +188,40 @@ int main(int argc, char *argv[])
 	////****设置全局采集次数****/
 	g_nMapUpdateTime=1;
 	int time=0;
-	t_start = clock(); /* get start time */ 
+
+	
 	while(g_nMapUpdateTime--)
 	{
 		/*使用多线程进行数据采集*/
 		//boost::thread_group grp;
 		//grp.create_thread(&IbeoThreadFLeft);  // 使用create_thread 
 		//grp.create_thread(&IbeoThreadFRight);  // 使用add_thread
-		////***************//
-		//grp.create_thread(&runLidarML); 
-		//grp.create_thread(&runLidarMR); 
-		//grp.create_thread(&runLidarBL); 
-		//grp.create_thread(&runLidarBR); 
-		//grp.join_all();
-
+		//grp.create_thread(boost::bind(draw_main,argc,argv));
+		//////***************//
+		////grp.create_thread(&runLidarML); 
+		////grp.create_thread(&runLidarMR); 
+//	////grp.create_thread(&runLidarBL); 
+		////grp.create_thread(&runLidarBR);
+		/*grp.join_all();*/
+		//draw_main(argc,argv);
 		/*IbeoThreadFLeft();
 		IbeoThreadFRight();	*/
-		DataClear(TempIbeoData.m_LidarScanFLeft);
-		DataClear(TempIbeoData.m_LidarScanFRight);
-		draw_main(argc,argv);
-		cout<<"time="<<time<<endl;
+		/*DataClear(TempIbeoData.m_LidarScanFLeft);		//去除范围外的点
+		DataClear(TempIbeoData.m_LidarScanFRight);*/
+		//draw_main(argc,argv);
+	//	cout<<"time=over"<<time<<endl;
 	}
+	boost::thread_group grp;
+	grp.create_thread(boost::bind(draw_main,argc,argv));
+	
+	
+	while (	1)
+	{
+		cout<<"this is main program"<<time<<endl;
+	}
+	grp.join_all();
 
+	cout<<"time=over"<<time<<endl;
 	//t_end = clock();/* get end time */ 
 	//printf("time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 
 

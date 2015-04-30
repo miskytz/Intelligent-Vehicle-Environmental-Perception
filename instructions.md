@@ -4,11 +4,40 @@
 `修改者：Tz` 
  
 **修改内容：**
+
+> 
+1. 针对opengl画图glutMainLoop消息循环锁死的情况进行了修改。
+**已解决**，解决方式：使用freegult库。
+		
+		glutInit(&argc, argv);
+    	glutReshapeFunc (myReshape);
+    	glutDisplayFunc(display);
+    	while(true)
+    	{
+    		glutMainLoopEvent();//消息循环
+    		do something();     //数据采集
+    		glutPostRedisplay(); //回调现实 
+    	}
+    	std::cout<<"ssss"<<std::endl;	// glutMainLoop();
+    	return 0; 
+在程序中可以开启多线程，一个画图并进行数据采集，主程序可以做另外的事情。
+ 
+**其他问题：**
+> 
+- 单线雷达采集坐标还未转换为cm；
+> 
+-
+
+### 2015年4月29日   
+`修改者：Tz` 
+ 
+**修改内容：**
 > 
 1. 多线程问题: 雷达全局变量会改变  
 **已解决**，解决方式：AllLuxListener添加成员变量，构造函数舒适化传入参数的方式进行传参。
 > 
 2. 对于objectX,objectY的坐标进行了转换。
+
  
 **其他问题：**
 > 
