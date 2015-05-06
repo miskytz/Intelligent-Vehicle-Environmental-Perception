@@ -15,14 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fusion.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="init.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ibeo.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -32,5 +24,22 @@
     <ClInclude Include="DataProcessing.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="database.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ibeo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lidar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DataProcessing.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
