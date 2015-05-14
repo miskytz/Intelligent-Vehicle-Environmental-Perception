@@ -40,14 +40,7 @@ void SingleLineLidar::beginScan(int flag)
 
 	size_t data_n = data.size();
 	//清空上一次扫描数据list.;
-	/*switch(flag)
-	{
-	case MidLeft:m_LidarScanMLeft.clear();break;
-	case MidRight:m_LidarScanMRight.clear();break;
-	case BackLeft:m_LidarScanBLeft.clear();break;
-	case BackRight:m_LidarScanBRight.clear();break;
-	}*/
-		m_LidarScanData.clear();
+	m_LidarScanData.clear();
 
 	for (size_t i = 0; i < data_n; ++i) {
 		long l = data[i];
@@ -92,14 +85,6 @@ void SingleLineLidar::beginScan(int flag)
 		TempLidarData.SetScanY(ScanY);
 		//std::cout<<"SetScanX="<<ScanX<<" "<<"SetScanY="<<ScanY<<endl;
 		
-		//根据
-		/*switch(flag)
-		{
-			case MidLeft:m_LidarScanMLeft.push_back(TempLidarData);break;
-			case MidRight:m_LidarScanMRight.push_back(TempLidarData);break;
-			case BackLeft:m_LidarScanBLeft.push_back(TempLidarData);break;
-			case BackRight:m_LidarScanBRight.push_back(TempLidarData);break;
-		}*/
 		m_LidarScanData.push_back(TempLidarData);
 	}
 	cout<<"data.size=="<<data.size()<<endl;

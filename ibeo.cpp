@@ -44,45 +44,50 @@ public:
 	
 		for (unsigned int i = 0; i < points.size(); i++)  
 		{
-			ibeo::UINT16  Distance=points.at(i).getDistance();   //单位cm'
+			if (points.at(i).getLayer()==1)
+			{
+				ibeo::UINT16  Distance=points.at(i).getDistance();   //单位cm'
 		
-			float Angle=points.at(i).getHorizontalAngle();    //角度为与y轴夹角，从+50到-50；
-				Angle=Angle/32;
-			//C++中cos,sin,asin,acos这些三角函数操作的是弧度,而非角度;弧度=角度*Pi/180;
-				//ibeo的坐标与直角坐标不同，需要转换  X=-gety=-dsinr;y=getx=dcosr;
-			long x = static_cast<long>(Distance * -sin(Angle*M_PI/180));//
-			long y = static_cast<long>(Distance * cos(Angle*M_PI/180));
+				float Angle=points.at(i).getHorizontalAngle();    //角度为与y轴夹角，从+50到-50；
+					Angle=Angle/32;
+				//C++中cos,sin,asin,acos这些三角函数操作的是弧度,而非角度;弧度=角度*Pi/180;
+					//ibeo的坐标与直角坐标不同，需要转换  X=-gety=-dsinr;y=getx=dcosr;
+				long x = static_cast<long>(Distance * -sin(Angle*M_PI/180));//
+				long y = static_cast<long>(Distance * cos(Angle*M_PI/180));
 			
-			//cout<<"Distance="<<Distance<<"   "<<" Angle="<< Angle<<endl;
-			//32是角度系数，参见ibeo说明文档，central range 0.125'
-			//*medium range 0.25',lateral range 0.5'*	
-			//	std::cout <<"X="<<x<<"   "<<"Y=" <<y <<std::endl;
+				//cout<<"Distance="<<Distance<<"   "<<" Angle="<< Angle<<endl;
+				//32是角度系数，参见ibeo说明文档，central range 0.125'
+				//*medium range 0.25',lateral range 0.5'*	
+				//	std::cout <<"X="<<x<<"   "<<"Y=" <<y <<std::endl;
 				
 				
-			//*****存储数据;*****/
-			if(flag==FrontLeft)//****Back left lidar*****//
-			{
-				x=x+LIDAR_FRONT_LEFT_POSITION_X;
-				y=y+LIDAR_FRONT_LEFT_POSITION_Y;
-			}
+				//*****存储数据;*****/
+				if(flag==FrontLeft)//****Back left lidar*****//
+				{
+					x=x+LIDAR_FRONT_LEFT_POSITION_X;
+					y=y+LIDAR_FRONT_LEFT_POSITION_Y;
+				}
 
-			else if (flag==FrontRight)//****Back right lidar*****//
-			{
-				x=x+LIDAR_FRONT_RIGHT_POSITION_X;
-				y=y+LIDAR_FRONT_RIGHT_POSITION_Y;
-			}
+				else if (flag==FrontRight)//****Back right lidar*****//
+				{
+					x=x+LIDAR_FRONT_RIGHT_POSITION_X;
+					y=y+LIDAR_FRONT_RIGHT_POSITION_Y;
+				}
 			
 			
-			//cerr<<"SetScanX="<<x<<" "<<"SetScanY="<<y<<endl;
-			TempLidarData.SetScanX(x);
-			TempLidarData.SetScanY(y);
+				//cerr<<"SetScanX="<<x<<" "<<"SetScanY="<<y<<endl;
+				TempLidarData.SetScanX(x);
+				TempLidarData.SetScanY(y);
 
 			
-			switch(flag)
-			{
-			case FrontLeft:TempIbeoData.m_LidarScanFLeft.push_back(TempLidarData); break;
-			case FrontRight:TempIbeoData.m_LidarScanFRight.push_back(TempLidarData); break;
-			}
+				switch(flag)
+				{
+				case FrontLeft:TempIbeoData.m_LidarScanFLeft.push_back(TempLidarData); break;
+				case FrontRight:TempIbeoData.m_LidarScanFRight.push_back(TempLidarData); break;
+				}
+
+			}		
+			
 		}
 	}			
 		
@@ -99,10 +104,11 @@ public:
 		case FrontLeft:TempIbeoData.m_LidarObjectFLeft.clear(); break;
 		case FrontRight:TempIbeoData.m_LidarObjectFRight.clear(); break;
 		}
+
+
 		for (unsigned int i = 0; i < objects.size(); ++i) {
 			
 			//*****存储数据;*****/
-			
 			int VelocitySigmaX=objects.at(i).getAbsoluteVelocitySigmaX();
 			int VelocitySigmaY=objects.at(i).getAbsoluteVelocitySigmaY();
 			ibeo::UINT16 ObjectX,ObjectY;

@@ -8,9 +8,10 @@
 
 
 #pragma once
+
 #include "database.h"
 #include <list>
-
+#include <vector>
 using namespace std;
 
 const int s_nGridFrontLenth=8000; //网格前方长度单位8000cm;
@@ -21,4 +22,6 @@ const int s_nCarWidth=1000;
 
 
 
-int DataClear(list<LidarData> &data);
+int DataClear(vector<LidarData> &data);
+float TurnToRange(vector<LidarData> &data,int n);
+int ClusterLidar(vector<LidarData> &Vectordata);

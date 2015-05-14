@@ -16,7 +16,7 @@
 
 #include <ibeosdk/lux.hpp>
 #include <ibeosdk/IpHelper.hpp>
-#include <list>
+#include <vector>
 
 //======================================================================
 
@@ -44,10 +44,10 @@ class IbeoData
 {
 public:
 
-	list<LidarData> m_LidarScanFRight;
-	list<LidarData> m_LidarScanFLeft;
-	list<LidarTargetData> m_LidarObjectFLeft;
-	list<LidarTargetData> m_LidarObjectFRight;
+	vector<LidarData> m_LidarScanFRight;
+	vector<LidarData> m_LidarScanFLeft;
+	vector<LidarTargetData> m_LidarObjectFLeft;
+	vector<LidarTargetData> m_LidarObjectFRight;
 
 private:
 

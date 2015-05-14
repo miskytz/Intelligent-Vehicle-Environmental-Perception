@@ -27,7 +27,7 @@ SingleLineLidar lidar_MR;
 IbeoData TempIbeoData;
 IbeoLidar Fleft;
 IbeoLidar FRight;
-
+extern vector<BreakPointData> BreakPoints;
 
 //****************************************//
 //***所有单线激光雷达初始化程序**************//
@@ -127,8 +127,7 @@ void myDisplay(void)
 	glEnd();
 
 	glColor3f(0.5f, 0.5f, 0.5f);//设置为灰色；
-
-	list<LidarData>::iterator ListPointer;	//	定义一个迭代器i，用于访问list;
+	vector<LidarData>::iterator ListPointer;	//	定义一个迭代器i，用于访问vector;
 	glBegin( GL_POINTS);
 	/* 在这里使用 glVertex*系列函数 ;*/
 	if (g_nOpenflag[FrontLeft]==1)  //	如果左前雷达打开，开始绘图;
@@ -184,14 +183,34 @@ void myDisplay(void)
 	}
 
 	if (g_nOpenflag[BackRight]==1)	//	如果后左雷达打开，开始绘图;
+	{
 		for (ListPointer=lidar_BR.m_LidarScanData.begin();ListPointer!=lidar_BR.m_LidarScanData.end();++ListPointer)
 		{
 			float drawX=ListPointer->GetScanX();
 			float drawY=ListPointer->GetScanY();
 			glVertex2f(drawX/LIDAR_DISPLAY_RANGE,drawY/LIDAR_DISPLAY_RANGE);
 		}
-
+	}
 	glEnd();
+
+	glColor3f(1.0f, 0.0f, 0.0f);//将聚类首位连接起来；
+	for (int i=0;i<BreakPoints.size();++i)
+	{
+		glBegin(GL_LINES);
+		
+		int StartPostion=BreakPoints.at(i).GetStartPosition();
+		int EndPostion=BreakPoints.at(i).GetEndPosition();
+		float StartX=TempIbeoData.m_LidarScanFRight.at(StartPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+		float StartY=TempIbeoData.m_LidarScanFRight.at(StartPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+		float EndX=TempIbeoData.m_LidarScanFRight.at(EndPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+		float EndY=TempIbeoData.m_LidarScanFRight.at(EndPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+		
+		glVertex2f(StartX,StartY);
+		glVertex2f(EndX,EndY);
+		glEnd();
+	}
+
+
 	glFlush();
 	glutSwapBuffers();
 }  
@@ -223,6 +242,7 @@ int draw_main(int argc, char *argv[])
 		if (g_nOpenflag[BackLeft]==1) {grp.create_thread(&runLidarBL);	}
 		if (g_nOpenflag[BackRight]==1) {grp.create_thread(&runLidarBR);}
 		grp.join_all();
+		ClusterLidar(TempIbeoData.m_LidarScanFRight);
 		glutPostRedisplay();
 		t_end = clock();/* get end time */ 
 		printf("time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 

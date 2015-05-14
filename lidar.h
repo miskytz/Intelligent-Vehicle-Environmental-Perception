@@ -11,7 +11,7 @@
 #pragma once
 #include "database.h"
 #include "Urg_driver.h"
-#include <list>
+#include <vector>
 
 
 using namespace qrk;
@@ -26,7 +26,7 @@ public:
 	void preProData(void);
 
 	Urg_driver urg;
-	list<LidarData> m_LidarScanData;
+	vector<LidarData> m_LidarScanData;
 
 protected:
 private:
