@@ -25,3 +25,5 @@ const int s_nCarWidth=1000;
 int DataClear(vector<LidarData> &data);
 float TurnToRange(vector<LidarData> &data,int n);
 int ClusterLidar(vector<LidarData> &Vectordata);
+void IepfAlgorithm(vector<LidarData> &data);
+void LeastSquareMethod(vector<BreakPointData> &breakdata,vector<LidarData> &data);

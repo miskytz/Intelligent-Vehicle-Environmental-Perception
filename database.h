@@ -59,7 +59,7 @@ const float LIDAR_BACK_RIGHT_POSITION_RATE=0.707;
 
 //	雷达扫描在显示中的范围变量，由于图像显示是在-1到1之间;
 //	所以需要进行一定的转换，显示范围为-5000cm到5000cm，需要除以比例变量;
-const float LIDAR_DISPLAY_RANGE=2000;
+const float LIDAR_DISPLAY_RANGE=500;
 
 
 //	雷达扫描点数据类型，包含扫描得到的X,Y坐标;
@@ -69,13 +69,13 @@ class LidarData
 public:
 	void SetScanX(int x){this->LidarScanX=x;}
 	void SetScanY(int y){this->LidarScanY=y;}
-	long GetScanX(){return LidarScanX;}
-	long GetScanY(){return LidarScanY;}
+	float GetScanX(){return LidarScanX;}
+	float GetScanY(){return LidarScanY;}
 protected:
 
 private:
-	long LidarScanX;
-	long LidarScanY;
+	float LidarScanX;
+	float LidarScanY;
 
 };
 
@@ -112,15 +112,18 @@ private:
 class BreakPointData
 {
 public:
+	void SetObjectId(int x){this->ObjectId=x;}
 	void SetStartPosition(int x){this->StartPosition=x;}
 	void SetEndPosition(int x){this->EndPosition=x;}
 
+	int GetObjectId(){return ObjectId;}
 	int GetStartPosition(){return StartPosition;}
 	int GetEndPosition(){return EndPosition;}
-	int GetPointNum(){return EndPosition-StartPosition;}
+	int GetPointNum(){return EndPosition-StartPosition+1;}
 
 private:
+	int ObjectId;		//	breakpoint ID，
 	int StartPosition;	//	breakpoint起点位置，指向容器相应数据
-	int EndPosition;	//	breakpoint起点Y坐标
+	int EndPosition;	//	breakpoint起点坐标
 	int PointNum;    //breakpoint包含的点数
 };

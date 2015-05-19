@@ -28,7 +28,6 @@ IbeoData TempIbeoData;
 IbeoLidar Fleft;
 IbeoLidar FRight;
 extern vector<BreakPointData> BreakPoints;
-
 //****************************************//
 //***所有单线激光雷达初始化程序**************//
 void AllLidarInit()
@@ -242,7 +241,15 @@ int draw_main(int argc, char *argv[])
 		if (g_nOpenflag[BackLeft]==1) {grp.create_thread(&runLidarBL);	}
 		if (g_nOpenflag[BackRight]==1) {grp.create_thread(&runLidarBR);}
 		grp.join_all();
+
+		//*********在此添加数据处理程序*********//
 		ClusterLidar(TempIbeoData.m_LidarScanFRight);
+		IepfAlgorithm(TempIbeoData.m_LidarScanFRight);
+		LeastSquareMethod(BreakPoints,TempIbeoData.m_LidarScanFRight);
+
+
+		//***************************************//
+
 		glutPostRedisplay();
 		t_end = clock();/* get end time */ 
 		printf("time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 
