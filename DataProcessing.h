@@ -4,7 +4,7 @@
 	    车辆左侧、右侧、后方 10m 建立网格地图;
 		清除范围外的点;
 	*/
-	/************************************************************************/
+/************************************************************************/
 
 
 #pragma once
@@ -22,6 +22,7 @@ const int s_nCarWidth=1000;
 
 
 
+// 申明函数;
 int DataClear(vector<LidarData> &data);
 float TurnToRange(vector<LidarData> &data,int n);
 int ClusterLidar(vector<LidarData> &Vectordata);

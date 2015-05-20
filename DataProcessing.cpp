@@ -91,7 +91,7 @@ vector<BreakPointData> BreakPoints;
 int ClusterLidar(vector<LidarData> &Vectordata)
 {
 	float Resolution=0.25;   //转化为幅度M_PI/180
-	float RLimit=2;
+	float RLimit=5;		//边界阈值,值越大，DNAX越小
 	float NoiseR=10; //噪声设定，根据IBEO说明文档
 	BreakPointData TempPoints;
 	BreakPoints.clear();
@@ -117,7 +117,7 @@ int ClusterLidar(vector<LidarData> &Vectordata)
 		{
 			TempPoints.SetEndPosition(i-1);
 
-			if(TempPoints.GetPointNum()>5)   //断点的条件是必须要包含5个点；
+			if(TempPoints.GetPointNum()>2)   //断点的条件是必须要包含2个点；
 			{
 				BreakPoints.push_back(TempPoints);//存储一个聚类起点终点;
 
@@ -186,32 +186,45 @@ float GetNearestDistance(LidarData PA, LidarData PB, LidarData PX)
 
 
 
+vector<BreakPointData> NewBreakdata;
 
-
-
+//ITERATIVE END-POINT FIT 
 void IepfAlgorithm(vector<LidarData> &data)
 {
 	BreakPointData TempPoints;
-
-	for (int i=0;i<BreakPoints.size();i++)
+	int SizeWW=BreakPoints.size();
+	for (int i=0;i<SizeWW;i++)
 	{
-		const int IEPFThreshold=20;//iepf算法边界；
+			int InsertPosition=1;  //插入数据的位置
+		const int IEPFThreshold=30;	//iepf算法边界；
 		int StartPostion=BreakPoints.at(i).GetStartPosition();
 		int EndPostion=BreakPoints.at(i).GetEndPosition();
-
-		for (int j=StartPostion+1;j<EndPostion;j++)
+		int ObjectID=BreakPoints.at(i).GetObjectId();
+		float MaxDistance=0; // 最大的距离;
+		int   MaxDistanceFlag=0; //最大距离处指向容器的位置
+		
+		// 寻找一个聚类中最大的距离;
+		for (int j=1+StartPostion;j<EndPostion-1;j++)
 		{
 			int NearestDistance=GetNearestDistance(data.at(StartPostion),data.at(EndPostion),data.at(j));
-			if (NearestDistance>=IEPFThreshold)
+			if (NearestDistance>MaxDistance)
 			{
-				BreakPoints.at(i).SetEndPosition(j-1);//将当点作为结束;
-				TempPoints.SetStartPosition(j-1);
-				TempPoints.SetEndPosition(EndPostion);
-				TempPoints.SetObjectId(i);
-				BreakPoints.insert(BreakPoints.begin()+i+1,TempPoints);//插入一个点;
-				break;
+				MaxDistance=NearestDistance;
+				MaxDistanceFlag=j;
 			}
+		}
 
+		//如果一个聚类中最大大于阈值,则分为两个聚类;
+		if (MaxDistance>=IEPFThreshold)
+		{
+			BreakPoints.at(i).SetEndPosition(MaxDistanceFlag);
+			TempPoints.SetStartPosition(MaxDistanceFlag);
+			TempPoints.SetEndPosition(EndPostion);
+			TempPoints.SetObjectId(ObjectID);		
+			BreakPoints.insert(BreakPoints.begin()+i+1,TempPoints);
+			i=0;
+			SizeWW=BreakPoints.size();
+			InsertPosition++;
 		}
 	}
 	cout<<"breakpoint"<<BreakPoints.size()<<endl;

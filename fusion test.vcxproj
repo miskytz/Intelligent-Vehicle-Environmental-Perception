@@ -83,12 +83,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AllLidarRun.cpp" />
     <ClCompile Include="DataProcessing.cpp" />
     <ClCompile Include="ibeo.cpp" />
     <ClCompile Include="lidar.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AllLidarRun.h" />
     <ClInclude Include="DataProcessing.h" />
     <ClInclude Include="ibeo.h" />
     <ClInclude Include="database.h" />

@@ -11,9 +11,10 @@ using namespace std;
 
 //全局变量;
 
-//定义，比如 const int a = 10;
+//声明全局变量;
 extern int g_nLidarFlag;
 extern int g_nMapUpdateTime;
+
 
 //雷达命名宏定义;
 enum LidarName{  FrontLeft=0,FrontRight=1, MidLeft=2, MidRight=3,BackLeft=4,BackRight=5};
@@ -23,7 +24,7 @@ const string ip[6]={"192.168.1.30","192.168.1.31","192.168.1.20","192.168.1.21",
 
 
 //雷达是否打开标志量,0为关闭，1位打开;
-const int g_nOpenflag[6]={0, 1, 0, 0, 0, 0 }; 
+const int g_nOpenflag[6]={1, 0, 0, 0, 0, 0 }; 
 
 
 // 雷达偏移信息，用于雷达坐标转换，单位cm;                          
@@ -50,16 +51,19 @@ const float LIDAR_MIDDLE_RIGHT_POSITION_RATE=1;
 //back left lidar;  
 const float LIDAR_BACK_LEFT_POSITION_X=-67.2;
 const float LIDAR_BACK_LEFT_POSITION_Y=-486.6;
-const float LIDAR_BACK_LEFT_POSITION_RATE=0.707;
+const float LIDAR_BACK_LEFT_POSITION_COS=0.742;
+const float LIDAR_BACK_LEFT_POSITION_Sin=0.670;
+
 
 //back right lidar;  
 const float LIDAR_BACK_RIGHT_POSITION_X=67.2;
 const float LIDAR_BACK_RIGHT_POSITION_Y=-486.6;
-const float LIDAR_BACK_RIGHT_POSITION_RATE=0.707;
+const float LIDAR_BACK_RIGHT_POSITION_COS=0.613;
+const float LIDAR_BACK_RIGHT_POSITION_Sin=0.793;
 
 //	雷达扫描在显示中的范围变量，由于图像显示是在-1到1之间;
 //	所以需要进行一定的转换，显示范围为-5000cm到5000cm，需要除以比例变量;
-const float LIDAR_DISPLAY_RANGE=500;
+const float LIDAR_DISPLAY_RANGE=1000;
 
 
 //	雷达扫描点数据类型，包含扫描得到的X,Y坐标;

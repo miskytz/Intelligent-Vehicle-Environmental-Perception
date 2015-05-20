@@ -38,14 +38,14 @@ public:
 		LidarData TempLidarData;
 		switch(flag)
 		{
-		case FrontLeft:TempIbeoData.m_LidarScanFLeft.clear(); break;
-		case FrontRight:TempIbeoData.m_LidarScanFRight.clear(); break;
+			case FrontLeft:TempIbeoData.m_LidarScanFLeft.clear(); break;
+			case FrontRight:TempIbeoData.m_LidarScanFRight.clear(); break;
 		}
-	
+
 		for (unsigned int i = 0; i < points.size(); i++)  
 		{
-			if (points.at(i).getLayer()==1)
-			{
+			if (points.at(i).getLayer()==1 )
+			{   
 				ibeo::UINT16  Distance=points.at(i).getDistance();   //单位cm'
 		
 				float Angle=points.at(i).getHorizontalAngle();    //角度为与y轴夹角，从+50到-50；
@@ -168,7 +168,6 @@ void IbeoLidar::beginScan(int flag)
 	
 
 	AllLuxListener allLuxListener(flag);
-	//const uint16_t port = getPort(ip[flag], 12002);
 	IbeoLux lux(ip[flag],12002);
 	//注意，开始工工作时必须要传入LogFileManager类对象，否则会报错;
 	lux.registerListener(dynamic_cast<DataListener<ScanLux>*>(&allLuxListener));
