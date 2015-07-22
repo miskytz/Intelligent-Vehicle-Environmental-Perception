@@ -36,7 +36,7 @@ void SingleLineLidar::beginScan(int flag)
 	SingleLineLidar::urg.get_distance(data,&time_stamp);
 	long min_distance = urg.min_distance();	
 	long max_distance = urg.max_distance();
-	long ScanX;long ScanY;
+	float ScanX=0;float ScanY=0;
 
 	size_t data_n = data.size();
 	//清空上一次扫描数据list.;
@@ -59,25 +59,25 @@ void SingleLineLidar::beginScan(int flag)
 
 		if(flag==MidLeft)  //****中左边的雷达坐标转换 *****//
 		{
-			ScanX=-y+LIDAR_MIDDLE_LEFT_POSITION_X;
-			ScanY=x+LIDAR_MIDDLE_LEFT_POSITION_Y;
+			ScanX=cos(LIDAR_MIDDLE_LEFT_ANGLE*M_PI/180)*x-sin(LIDAR_MIDDLE_LEFT_ANGLE*M_PI/180)*y+LIDAR_MIDDLE_LEFT_POSITION_X;
+			ScanY=sin(LIDAR_MIDDLE_LEFT_ANGLE*M_PI/180)*x+cos(LIDAR_MIDDLE_LEFT_ANGLE*M_PI/180)*y+LIDAR_MIDDLE_LEFT_POSITION_Y;
 		}
 		else if(flag==MidRight)//****中右边的雷达坐标转换 *****//
 		{
-			ScanX=y+LIDAR_MIDDLE_RIGHT_POSITION_X;
-			ScanY=-x+LIDAR_MIDDLE_RIGHT_POSITION_Y;
+			ScanX=cos(LIDAR_MIDDLE_RIGHT_ANGLE*M_PI/180)*x-sin(LIDAR_MIDDLE_RIGHT_ANGLE*M_PI/180)*y+LIDAR_MIDDLE_RIGHT_POSITION_X;
+			ScanY=sin(LIDAR_MIDDLE_RIGHT_ANGLE*M_PI/180)*x+cos(LIDAR_MIDDLE_RIGHT_ANGLE*M_PI/180)*y+LIDAR_MIDDLE_RIGHT_POSITION_Y;
 		}
 
 		else if(flag==BackLeft)//****Back left lidar*****//
 		{
-			ScanX=-LIDAR_BACK_LEFT_POSITION_Sin*x-LIDAR_BACK_LEFT_POSITION_COS*y+LIDAR_BACK_LEFT_POSITION_X;
-			ScanY=LIDAR_BACK_LEFT_POSITION_COS*x-LIDAR_BACK_LEFT_POSITION_Sin*y+LIDAR_BACK_LEFT_POSITION_Y;
+			ScanX=cos(LIDAR_BACK_LEFT_ANGLE*M_PI/180)*x-sin(LIDAR_BACK_LEFT_ANGLE*M_PI/180)*y+LIDAR_BACK_LEFT_POSITION_X;
+			ScanY=sin(LIDAR_BACK_LEFT_ANGLE*M_PI/180)*x+cos(LIDAR_BACK_LEFT_ANGLE*M_PI/180)*y+LIDAR_BACK_LEFT_POSITION_Y;
 		}
 
 		else if (flag==BackRight)//****Back right lidar*****//
 		{
-			ScanX=LIDAR_BACK_RIGHT_POSITION_COS*y-LIDAR_BACK_RIGHT_POSITION_Sin*x+LIDAR_BACK_RIGHT_POSITION_X;
-			ScanY=-LIDAR_BACK_RIGHT_POSITION_Sin*y-LIDAR_BACK_RIGHT_POSITION_COS*x+LIDAR_BACK_RIGHT_POSITION_Y;
+			ScanX=cos(LIDAR_BACK_RIGHT_ANGLE*M_PI/180)*x-sin(LIDAR_BACK_RIGHT_ANGLE*M_PI/180)*y+LIDAR_BACK_RIGHT_POSITION_X;
+			ScanY=sin(LIDAR_BACK_RIGHT_ANGLE*M_PI/180)*x+cos(LIDAR_BACK_RIGHT_ANGLE*M_PI/180)*y+LIDAR_BACK_RIGHT_POSITION_Y;
 		}
 	
 		//	将采集数据用set方法存入templidardata中;
@@ -87,7 +87,6 @@ void SingleLineLidar::beginScan(int flag)
 		
 		m_LidarScanData.push_back(TempLidarData);
 	}
-	cout<<"data.size=="<<data.size()<<endl;
 	urg.stop_measurement();	
 }
 

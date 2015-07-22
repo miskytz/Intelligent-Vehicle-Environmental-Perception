@@ -9,8 +9,6 @@
  *
  */
 
-
-
 #include "ibeo.h"
 #include <ibeosdk/lux.hpp>
 #include <ibeosdk/IpHelper.hpp>
@@ -36,6 +34,7 @@ public:
 	{
 		const std::vector<ScanPointLux>& points = scan->getScanPoints();
 		LidarData TempLidarData;
+		float Transform_X=0;float Transform_Y=0;
 		switch(flag)
 		{
 			case FrontLeft:TempIbeoData.m_LidarScanFLeft.clear(); break;
@@ -52,38 +51,36 @@ public:
 					Angle=Angle/32;
 				//C++中cos,sin,asin,acos这些三角函数操作的是弧度,而非角度;弧度=角度*Pi/180;
 					//ibeo的坐标与直角坐标不同，需要转换  X=-gety=-dsinr;y=getx=dcosr;
-				long x = static_cast<long>(Distance * -sin(Angle*M_PI/180));//
-				long y = static_cast<long>(Distance * cos(Angle*M_PI/180));
+				float x = static_cast<long>(Distance * -sin(Angle*M_PI/180));//
+				float y = static_cast<long>(Distance * cos(Angle*M_PI/180));
 			
 				//cout<<"Distance="<<Distance<<"   "<<" Angle="<< Angle<<endl;
 				//32是角度系数，参见ibeo说明文档，central range 0.125'
 				//*medium range 0.25',lateral range 0.5'*	
-				//	std::cout <<"X="<<x<<"   "<<"Y=" <<y <<std::endl;
-				
 				
 				//*****存储数据;*****/
-				if(flag==FrontLeft)//****Back left lidar*****//
+				if(flag==FrontLeft)//****Fron left lidar*****//
 				{
-					x=x+LIDAR_FRONT_LEFT_POSITION_X;
-					y=y+LIDAR_FRONT_LEFT_POSITION_Y;
+					Transform_X=cos(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*x-sin(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*y+LIDAR_FRONT_LEFT_POSITION_X;
+					Transform_Y=sin(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*x+cos(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*y+LIDAR_FRONT_LEFT_POSITION_Y;
 				}
 
-				else if (flag==FrontRight)//****Back right lidar*****//
+				else if (flag==FrontRight)//****Fron right lidar*****//
 				{
-					x=x+LIDAR_FRONT_RIGHT_POSITION_X;
-					y=y+LIDAR_FRONT_RIGHT_POSITION_Y;
+					Transform_X=cos(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*x-sin(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*y+LIDAR_FRONT_RIGHT_POSITION_X;
+					Transform_Y=sin(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*x+cos(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*y+LIDAR_FRONT_RIGHT_POSITION_Y;
 				}
 			
 			
 				//cerr<<"SetScanX="<<x<<" "<<"SetScanY="<<y<<endl;
-				TempLidarData.SetScanX(x);
-				TempLidarData.SetScanY(y);
+				TempLidarData.SetScanX(Transform_X);
+				TempLidarData.SetScanY(Transform_Y);
 
 			
 				switch(flag)
 				{
-				case FrontLeft:TempIbeoData.m_LidarScanFLeft.push_back(TempLidarData); break;
-				case FrontRight:TempIbeoData.m_LidarScanFRight.push_back(TempLidarData); break;
+					case FrontLeft:TempIbeoData.m_LidarScanFLeft.push_back(TempLidarData); break;
+					case FrontRight:TempIbeoData.m_LidarScanFRight.push_back(TempLidarData); break;
 				}
 
 			}		
@@ -105,41 +102,51 @@ public:
 		case FrontRight:TempIbeoData.m_LidarObjectFRight.clear(); break;
 		}
 
-
+		float Transform_Ob_X=0;float Transform_Ob_Y=0;float ObjectX,ObjectY;
 		for (unsigned int i = 0; i < objects.size(); ++i) {
 			
 			//*****存储数据;*****/
-			int VelocitySigmaX=objects.at(i).getAbsoluteVelocitySigmaX();
-			int VelocitySigmaY=objects.at(i).getAbsoluteVelocitySigmaY();
-			ibeo::UINT16 ObjectX,ObjectY;
-			if(flag==FrontLeft)//****Back left lidar*****//
+			
+			//坐标信息
+			ObjectX=-objects.at(i).getBoundingBoxCenter().getY();
+			ObjectY=objects.at(i).getBoundingBoxCenter().getX();
+
+							
+			if(flag==FrontLeft)//****Fron left lidar*****//
 			{
-				 ObjectX=objects.at(i).getBoundingBoxCenter().getX()+LIDAR_FRONT_LEFT_POSITION_X;
-				 ObjectY=objects.at(i).getBoundingBoxCenter().getY()+LIDAR_FRONT_LEFT_POSITION_Y;
+				Transform_Ob_X=cos(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*ObjectX-sin(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*ObjectY+LIDAR_FRONT_LEFT_POSITION_X;
+				Transform_Ob_Y=sin(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*ObjectX+cos(LIDAR_FRONT_LEFT_ANGLE*M_PI/180)*ObjectY+LIDAR_FRONT_LEFT_POSITION_Y;
 			}
 
-			else if (flag==FrontRight)//****Back right lidar*****//
+			else if (flag==FrontRight)//****Fron right lidar*****//
 			{
-				ObjectX=objects.at(i).getObjectBoxSizeX()+LIDAR_FRONT_RIGHT_POSITION_X;
-				ObjectY=objects.at(i).getObjectBoxSizeY()+LIDAR_FRONT_RIGHT_POSITION_Y;
-			}	
+				Transform_Ob_X=cos(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*ObjectX-sin(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*ObjectY+LIDAR_FRONT_RIGHT_POSITION_X;
+				Transform_Ob_Y=sin(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*ObjectX+cos(LIDAR_FRONT_RIGHT_ANGLE*M_PI/180)*ObjectY+LIDAR_FRONT_RIGHT_POSITION_Y;
+			}
 			
-			TempTargerData.SetTargetX(ObjectX);
-			TempTargerData.SetTargetY(objects.at(i).getObjectBoxSizeY());
+			int VelocitySigmaX=objects.at(i).getAbsoluteVelocitySigmaX();
+			int VelocitySigmaY=objects.at(i).getAbsoluteVelocitySigmaY();
+
+			TempTargerData.SetTargetX(Transform_Ob_X);
+			TempTargerData.SetTargetY(Transform_Ob_Y);
 			TempTargerData.SetTargetLength(objects.at(i).getBoundingBoxLength());
 			TempTargerData.SetTargetWidth(objects.at(i).getBoundingBoxWidth());
 			TempTargerData.SetTargetVelocity(0.707*VelocitySigmaX+0.707*VelocitySigmaY);
+			TempTargerData.SetTargetClass(objects.at(i).getClassification());
+
+			
+			
 			switch(flag)
 			{
-			case FrontLeft:TempIbeoData.m_LidarObjectFLeft.push_back(TempTargerData);break;
-			case FrontRight:TempIbeoData.m_LidarObjectFRight.push_back(TempTargerData);break;
+				case FrontLeft:TempIbeoData.m_LidarObjectFLeft.push_back(TempTargerData);break;
+				case FrontRight:TempIbeoData.m_LidarObjectFRight.push_back(TempTargerData);break;
 			}
 		}
 
 	}
 
 private:
-	int flag;
+	int flag;  //雷达编号标志;
 	//========================================;
 };
 
@@ -165,8 +172,6 @@ bool IbeoLidar::isLidarWork()
 
 void IbeoLidar::beginScan(int flag)
 {
-	
-
 	AllLuxListener allLuxListener(flag);
 	IbeoLux lux(ip[flag],12002);
 	//注意，开始工工作时必须要传入LogFileManager类对象，否则会报错;

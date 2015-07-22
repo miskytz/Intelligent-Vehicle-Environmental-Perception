@@ -28,3 +28,4 @@ float TurnToRange(vector<LidarData> &data,int n);
 int ClusterLidar(vector<LidarData> &Vectordata);
 void IepfAlgorithm(vector<LidarData> &data);
 void LeastSquareMethod(vector<BreakPointData> &breakdata,vector<LidarData> &data);
+void FeatureExtraction(vector<BreakPointData> &breakdata,vector<LidarData> &data,vector<LidarTargetData> &Target);

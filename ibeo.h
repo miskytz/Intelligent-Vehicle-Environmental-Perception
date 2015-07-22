@@ -58,4 +58,3 @@ extern IbeoData TempIbeoData;
 extern IbeoLidar Fleft;
 extern IbeoLidar FRight;
 
-

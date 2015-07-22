@@ -26,10 +26,10 @@ extern int g_nMapUpdateTime=1;
 void myDisplay(void)  
 {   
 	glClear(GL_COLOR_BUFFER_BIT);  //	清除缓冲区，GL_COLOR_BUFFER_BIT:当前可写的颜色缓冲;
-	glPointSize(1.5f);		//	设置画图像素大小;
-	
+		
 	//	绘制车辆位置;
-	glColor3f(0.0f,0.0f, 1.0f);	//设置为蓝色;
+	glLineWidth(3.0f);	//	设置直线宽度;
+	glColor3f(1.0f,0.0f, 0.0f);	//设置为蓝色;
 	glBegin(GL_LINE_LOOP);
 	glVertex2f(0.019,-0.003);
 	glVertex2f(0.019,-0.097);
@@ -38,6 +38,7 @@ void myDisplay(void)
 	glEnd();
 
 	//将扫描点图绘制出来;
+	glPointSize(1.0f);		//	设置点像素大小;
 	glColor3f(1.0f, 1.0f, 1.0f);	//设置为灰色;
 	vector<LidarData>::iterator ListPointer;	//	定义一个迭代器i，用于访问vector;
 	glBegin( GL_POINTS);
@@ -105,21 +106,84 @@ void myDisplay(void)
 	}
 	glEnd();
 
-	//绘制目标轮廓;
+	////绘制单线目标轮廓;
+	//glColor3f(1.0f, 0.0f, 0.0f);
+	//for (int i=0;i<BreakPoints.size();++i)
+	//{
+	//	glBegin(GL_LINES);
+	//	
+	//	int StartPostion=BreakPoints.at(i).GetStartPosition();
+	//	int EndPostion=BreakPoints.at(i).GetEndPosition();
+	//	float StartX=lidar_BL.m_LidarScanData.at(StartPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+	//	float StartY=lidar_BL.m_LidarScanData.at(StartPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+	//	float EndX=lidar_BL.m_LidarScanData.at(EndPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+	//	float EndY=lidar_BL.m_LidarScanData.at(EndPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+	//	
+	//	glVertex2f(StartX,StartY);
+	//	glVertex2f(EndX,EndY);
+	//	glEnd();
+	//}
+
+	//***********test*******
 	glColor3f(1.0f, 0.0f, 0.0f);
-	for (int i=0;i<BreakPoints.size();++i)
+	glLineWidth(1.0f);
+	for (int i=0;i<lidar_BL.m_LidarTarget.size();++i)
 	{
-		glBegin(GL_LINES);
-		
-		int StartPostion=BreakPoints.at(i).GetStartPosition();
-		int EndPostion=BreakPoints.at(i).GetEndPosition();
-		float StartX=TempIbeoData.m_LidarScanFLeft.at(StartPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
-		float StartY=TempIbeoData.m_LidarScanFLeft.at(StartPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
-		float EndX=TempIbeoData.m_LidarScanFLeft.at(EndPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
-		float EndY=TempIbeoData.m_LidarScanFLeft.at(EndPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
-		
-		glVertex2f(StartX,StartY);
-		glVertex2f(EndX,EndY);
+		float TargetX=lidar_BL.m_LidarTarget.at(i).GetTargetX()/LIDAR_DISPLAY_RANGE;
+		float TargetY=lidar_BL.m_LidarTarget.at(i).GetTargetY()/LIDAR_DISPLAY_RANGE;
+		float TargetLength=lidar_BL.m_LidarTarget.at(i).GetTargetLength()/LIDAR_DISPLAY_RANGE;
+		float TargetWidth=lidar_BL.m_LidarTarget.at(i).GetTargetWidth()/LIDAR_DISPLAY_RANGE;
+		float TargetVelocity=lidar_BL.m_LidarTarget.at(i).GetTargetVelocity()/LIDAR_DISPLAY_RANGE;
+		float TargetClass=lidar_BL.m_LidarTarget.at(i).GetTargetClass();
+
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(TargetX-TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY-TargetLength/2);
+		glVertex2f(TargetX-TargetWidth/2,TargetY-TargetLength/2);
+		glEnd();
+	
+	}
+
+
+
+
+
+	
+	//绘制四线激光雷达目标轮廓;
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glLineWidth(1.0f);
+	for (int i=0;i<TempIbeoData.m_LidarObjectFLeft.size();++i)
+	{
+		float TargetX=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetX()/LIDAR_DISPLAY_RANGE;
+		float TargetY=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetY()/LIDAR_DISPLAY_RANGE;
+		float TargetLength=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetLength()/LIDAR_DISPLAY_RANGE;
+		float TargetWidth=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetWidth()/LIDAR_DISPLAY_RANGE;
+		float TargetVelocity=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetVelocity()/LIDAR_DISPLAY_RANGE;
+		float TargetClass=TempIbeoData.m_LidarObjectFLeft.at(i).GetTargetClass();
+
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(TargetX-TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY-TargetLength/2);
+		glVertex2f(TargetX-TargetWidth/2,TargetY-TargetLength/2);
+		glEnd();
+	}
+	glColor3f(0.0f, 1.0f, 0.0f);
+	for (int i=0;i<TempIbeoData.m_LidarObjectFRight.size();++i)
+	{
+		float TargetX=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetX()/LIDAR_DISPLAY_RANGE;
+		float TargetY=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetY()/LIDAR_DISPLAY_RANGE;
+		float TargetLength=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetLength()/LIDAR_DISPLAY_RANGE;
+		float TargetWidth=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetWidth()/LIDAR_DISPLAY_RANGE;
+		float TargetVelocity=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetVelocity()/LIDAR_DISPLAY_RANGE;
+		float TargetClass=TempIbeoData.m_LidarObjectFRight.at(i).GetTargetClass();
+
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(TargetX-TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY+TargetLength/2);
+		glVertex2f(TargetX+TargetWidth/2,TargetY-TargetLength/2);
+		glVertex2f(TargetX-TargetWidth/2,TargetY-TargetLength/2);
 		glEnd();
 	}
 
@@ -135,13 +199,21 @@ int draw_main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE );  // 修改了参数为 GLUT_DOUBLE;
 	glutInitWindowPosition(100, 100);  
 	glutInitWindowSize(500, 500);  
-	glutCreateWindow("第一个OpenGL程序");  
+	glutCreateWindow("激光雷达融合局部地图");  
 	glutDisplayFunc(&myDisplay); 
 
 	clock_t t_start; /* start time when test starts */ 
 	clock_t t_end; /* end time when test ends */ 
+
 	while(true)
 	{
+		std::cout<<"   "<<endl;
+		std::cout<<"-----------------------------------------------"<<endl;
+		std::cout<<"This is a Lidar Scanning Program"<<endl;
+		std::cout<<"The latest version is 2015-6-5"<<endl;
+		std::cout<<"Author : Tian Zhen  "<<endl;
+		std::cout<<"Copyright 2015 Intelligent Vehicle Lab of CQUPT"<<endl;
+		
 		t_start = clock(); /* get start time */ 
 		glutMainLoopEvent();
 
@@ -158,18 +230,18 @@ int draw_main(int argc, char *argv[])
 
 		//*********在此添加数据处理程序*********//
 		//此消息循环会一直循环执行，直到程序结束//
-		ClusterLidar(TempIbeoData.m_LidarScanFLeft);
-		IepfAlgorithm(TempIbeoData.m_LidarScanFLeft);
-		//LeastSquareMethod(BreakPoints,TempIbeoData.m_LidarScanFLeft);
-
+		ClusterLidar(lidar_BL.m_LidarScanData);
+		IepfAlgorithm(lidar_BL.m_LidarScanData);
+		LeastSquareMethod(BreakPoints,lidar_BL.m_LidarScanData);
+		FeatureExtraction(BreakPoints,lidar_BL.m_LidarScanData,lidar_BL.m_LidarTarget);
+		
 		glutPostRedisplay();
 		t_end = clock();/* get end time */ 
-		printf("time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 
+		printf("Sacn Time: %.3f s\n", (double)(t_end-t_start)/CLOCKS_PER_SEC); 	/*printf test time */ 
 	}
 	return 0;
 }
 	
-
 
 
 

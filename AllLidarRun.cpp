@@ -22,8 +22,8 @@ void AllLidarInit()
 	{
 		Fleft.init(FrontLeft);
 	}
-
-	if (g_nOpenflag[FrontLeft]!=1 && g_nOpenflag[FrontRight]==1) //四线激光雷达智能打开一次;
+	//四线激光雷达只能打开一次;
+	if (g_nOpenflag[FrontLeft]!=1 && g_nOpenflag[FrontRight]==1) 
 	{
 		FRight.init(FrontRight);
 	}
@@ -65,7 +65,6 @@ void IbeoThreadFRight()
 {
 	//**前面右边多线激光雷达**//
 	FRight.beginScan(FrontRight);
-	//cout<<"i am working"<<endl;
 }
 
 

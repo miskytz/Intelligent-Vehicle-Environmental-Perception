@@ -1,6 +1,3 @@
-
-
-
 #include "database.h"
 #include "DataProcessing.h"
 #include <list>
@@ -11,8 +8,6 @@
 //	根据栅格地图范围，去掉范围外的点;
 int DataClear(vector<LidarData> &data)
 {
-	
-
 	vector<LidarData>::iterator listpointer;
 	for (listpointer=data.begin();listpointer!=data.end();++listpointer)
 	{
@@ -122,7 +117,6 @@ int ClusterLidar(vector<LidarData> &Vectordata)
 				BreakPoints.push_back(TempPoints);//存储一个聚类起点终点;
 
 			}
-
 			
 			//下一个X,Y作为起始点;
 			TempPoints.SetStartPosition(i);
@@ -185,9 +179,6 @@ float GetNearestDistance(LidarData PA, LidarData PB, LidarData PX)
 }  
 
 
-
-vector<BreakPointData> NewBreakdata;
-
 //ITERATIVE END-POINT FIT 
 void IepfAlgorithm(vector<LidarData> &data)
 {
@@ -231,6 +222,7 @@ void IepfAlgorithm(vector<LidarData> &data)
 };
 
 //最小二乘法拟合直线;
+//对照断点，改变传入参数data里的数据
 void LeastSquareMethod(vector<BreakPointData> &breakdata,vector<LidarData> &data)
 {
 	float a,b;	//定义最小而二乘法两个参数;
@@ -269,3 +261,104 @@ void LeastSquareMethod(vector<BreakPointData> &breakdata,vector<LidarData> &data
 	}
 	
 }
+
+
+void FeatureExtraction(vector<BreakPointData> &breakdata,vector<LidarData> &data,vector<LidarTargetData> &Target)
+{
+	Target.clear();
+	//求取breakdata中一个目标包含的线段数量;
+	int i=0;
+	while(i < breakdata.size())
+	{
+		int ObjectLine=1;
+		for (int j = i+1;j < breakdata.size();j++)
+		{
+			if(breakdata.at(i).GetObjectId()!=breakdata.at(j).GetObjectId())
+			{	
+				breakdata.at(i).SetLineNum(ObjectLine);
+				i=j;
+				break;
+			}
+			ObjectLine++;
+
+			//如果是最后一个;
+			if (j==breakdata.size()-1)
+			{
+				breakdata.at(i).SetLineNum(ObjectLine);
+				i=j;
+				break;
+			}
+
+		}
+		if (i==breakdata.size()-1)
+		{
+			breakdata.at(i).SetLineNum(1);
+			break;
+		}
+	}
+	
+	LidarTargetData TempTargerData;
+	
+	
+	//特征提取;
+	for (i=0;i<breakdata.size();i++)
+	{
+		int LineNum=breakdata.at(i).GetLineNum();
+		
+		if(LineNum==1)  //线段数量为1的情况//
+		{
+			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
+			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
+			float BreakStartY=data.at(breakdata.at(i).GetStartPosition()).GetScanY();
+			float BreakEndY=data.at(breakdata.at(i).GetEndPosition()).GetScanY();
+			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX)+
+				(BreakStartY-BreakEndY)*(BreakStartY-BreakEndY)		);
+
+			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
+			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
+			TempTargerData.SetTargetWidth(TargetWidth);
+			TempTargerData.SetTargetLength(30);
+			Target.push_back(TempTargerData);
+		}
+
+		if(LineNum==2)  //线段数量为2的情况//
+		{
+			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
+			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
+			float BreakStartY=data.at(breakdata.at(i+1).GetStartPosition()).GetScanY();
+			float BreakEndY=data.at(breakdata.at(i+1).GetEndPosition()).GetScanY();
+			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX));
+			int TargetLength=sqrt((BreakStartY-BreakEndY)*(BreakStartY-BreakEndY));
+			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
+			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
+			TempTargerData.SetTargetWidth(TargetWidth);
+			TempTargerData.SetTargetLength(TargetLength);
+			Target.push_back(TempTargerData);
+		}
+
+		if(LineNum>2)  //线段数量为2的情况//
+		{
+			for (int j=i;j<i+LineNum;j++)
+			{
+					//找到最大的线段LX，LY；
+				FIND(i=0;i<breakdata.size();i++)
+			}
+			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
+			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
+			float BreakStartY=data.at(breakdata.at(i+1).GetStartPosition()).GetScanY();
+			float BreakEndY=data.at(breakdata.at(i+1).GetEndPosition()).GetScanY();
+			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX));
+			int TargetLength=sqrt((BreakStartY-BreakEndY)*(BreakStartY-BreakEndY));
+			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
+			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
+			TempTargerData.SetTargetWidth(TargetWidth);
+			TempTargerData.SetTargetLength(TargetLength);
+			Target.push_back(TempTargerData);
+		}
+
+
+	}
+
+}
+
+

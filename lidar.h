@@ -27,18 +27,15 @@ public:
 
 	Urg_driver urg;
 	vector<LidarData> m_LidarScanData;
+	vector<LidarTargetData> m_LidarTarget;
 
 protected:
 private:
 		
 };
 
-
-extern SingleLineLidar lidar_BR;
-extern SingleLineLidar lidar_BL;
-extern SingleLineLidar lidar_ML;
+extern SingleLineLidar lidar_BR;extern SingleLineLidar lidar_BL;extern SingleLineLidar lidar_ML;
 extern SingleLineLidar lidar_MR;
-
 
 
 
