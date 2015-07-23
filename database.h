@@ -62,7 +62,7 @@ const float LIDAR_BACK_RIGHT_ANGLE=-136.9;
 
 //	雷达扫描在显示中的范围变量，由于图像显示是在-1到1之间;
 //	所以需要进行一定的转换，显示范围为-5000cm到5000cm，需要除以比例变量;
-const float LIDAR_DISPLAY_RANGE=5000;
+const float LIDAR_DISPLAY_RANGE=2000;
 
 
 //	雷达扫描点数据类型，包含扫描得到的X,Y坐标;

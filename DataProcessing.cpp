@@ -308,12 +308,13 @@ void FeatureExtraction(vector<BreakPointData> &breakdata,vector<LidarData> &data
 		if(LineNum==1)  //线段数量为1的情况//
 		{
 			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
-			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
 			float BreakStartY=data.at(breakdata.at(i).GetStartPosition()).GetScanY();
+
+			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
 			float BreakEndY=data.at(breakdata.at(i).GetEndPosition()).GetScanY();
+
 			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX)+
 				(BreakStartY-BreakEndY)*(BreakStartY-BreakEndY)		);
-
 			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
 			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
 			TempTargerData.SetTargetWidth(TargetWidth);
@@ -321,36 +322,65 @@ void FeatureExtraction(vector<BreakPointData> &breakdata,vector<LidarData> &data
 			Target.push_back(TempTargerData);
 		}
 
-		if(LineNum==2)  //线段数量为2的情况//
-		{
-			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
-			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
-			float BreakStartY=data.at(breakdata.at(i+1).GetStartPosition()).GetScanY();
-			float BreakEndY=data.at(breakdata.at(i+1).GetEndPosition()).GetScanY();
-			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX));
-			int TargetLength=sqrt((BreakStartY-BreakEndY)*(BreakStartY-BreakEndY));
-			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
-			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
-			TempTargerData.SetTargetWidth(TargetWidth);
-			TempTargerData.SetTargetLength(TargetLength);
-			Target.push_back(TempTargerData);
-		}
+		//if(LineNum==2)  //线段数量为2的情况//
+		//{
+		//	float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
+		//	float BreakStartY=data.at(breakdata.at(i).GetStartPosition()).GetScanY();
+		//	
+		//	float BreakMidX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
+		//	float BreakMidY=data.at(breakdata.at(i).GetEndPosition()).GetScanY();
 
-		if(LineNum>2)  //线段数量为2的情况//
+		//	float BreakEndX=data.at(breakdata.at(i+1).GetEndPosition()).GetScanX();
+		//	float BreakEndY=data.at(breakdata.at(i+1).GetEndPosition()).GetScanY();
+
+		//	
+		//	int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX));
+		//	int TargetLength=sqrt((BreakStartY-BreakEndY)*(BreakStartY-BreakEndY));
+		//	TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
+		//	TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
+		//	TempTargerData.SetTargetWidth(TargetWidth);
+		//	TempTargerData.SetTargetLength(TargetLength);
+		//	Target.push_back(TempTargerData);
+		//}
+
+		if(LineNum>=2)  //线段数量为2的情况//
 		{
+			LidarData Pstart,Pend;
+			float DistanceX=0,DistanceY=0;
+			float MaxDistanceX=0,MaxDistanceY=0,MaxStartX,MaxEndX,MaxStartY,MaxEndY;
+			//找到最大的线段LX，LY；
 			for (int j=i;j<i+LineNum;j++)
 			{
-					//找到最大的线段LX，LY；
-				FIND(i=0;i<breakdata.size();i++)
+				for(int z=j;z<i+LineNum;z++)
+				{
+					float BreakStartX=data.at(breakdata.at(j).GetStartPosition()).GetScanX();
+					float BreakStartY=data.at(breakdata.at(j).GetStartPosition()).GetScanY();
+					float BreakEndX=data.at(breakdata.at(z).GetEndPosition()).GetScanX();
+					float BreakEndY=data.at(breakdata.at(z).GetEndPosition()).GetScanY();
+					
+					//分别求取x和y的最大距离，作为目标边界;
+					DistanceX=abs(BreakStartX-BreakEndX);
+					DistanceY=abs(BreakStartY-BreakEndY);
+										
+					if(MaxDistanceX<DistanceX)
+					{
+						MaxDistanceX=DistanceX;
+						MaxStartX=BreakStartX;
+						MaxEndX=BreakEndX;
+					}
+					if(MaxDistanceY<DistanceY)
+					{
+						MaxDistanceY=DistanceY;
+						MaxStartY=BreakStartY;
+						MaxEndY=BreakEndY;
+					}
+				}
 			}
-			float BreakStartX=data.at(breakdata.at(i).GetStartPosition()).GetScanX();
-			float BreakEndX=data.at(breakdata.at(i).GetEndPosition()).GetScanX();
-			float BreakStartY=data.at(breakdata.at(i+1).GetStartPosition()).GetScanY();
-			float BreakEndY=data.at(breakdata.at(i+1).GetEndPosition()).GetScanY();
-			int TargetWidth=sqrt((BreakStartX-BreakEndX)*(BreakStartX-BreakEndX));
-			int TargetLength=sqrt((BreakStartY-BreakEndY)*(BreakStartY-BreakEndY));
-			TempTargerData.SetTargetX((BreakStartX+BreakEndX)/2);
-			TempTargerData.SetTargetY((BreakStartY+BreakEndY)/2);
+			
+			int TargetWidth=abs(MaxStartX-MaxEndX);
+			int TargetLength=abs(MaxStartY-MaxEndY);
+			TempTargerData.SetTargetX((MaxStartX+MaxEndX)/2);
+			TempTargerData.SetTargetY((MaxStartY+MaxEndY)/2);
 			TempTargerData.SetTargetWidth(TargetWidth);
 			TempTargerData.SetTargetLength(TargetLength);
 			Target.push_back(TempTargerData);
@@ -360,5 +390,3 @@ void FeatureExtraction(vector<BreakPointData> &breakdata,vector<LidarData> &data
 	}
 
 }
-
-

@@ -106,23 +106,23 @@ void myDisplay(void)
 	}
 	glEnd();
 
-	////绘制单线目标轮廓;
-	//glColor3f(1.0f, 0.0f, 0.0f);
-	//for (int i=0;i<BreakPoints.size();++i)
-	//{
-	//	glBegin(GL_LINES);
-	//	
-	//	int StartPostion=BreakPoints.at(i).GetStartPosition();
-	//	int EndPostion=BreakPoints.at(i).GetEndPosition();
-	//	float StartX=lidar_BL.m_LidarScanData.at(StartPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
-	//	float StartY=lidar_BL.m_LidarScanData.at(StartPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
-	//	float EndX=lidar_BL.m_LidarScanData.at(EndPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
-	//	float EndY=lidar_BL.m_LidarScanData.at(EndPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
-	//	
-	//	glVertex2f(StartX,StartY);
-	//	glVertex2f(EndX,EndY);
-	//	glEnd();
-	//}
+	//绘制单线目标轮廓;
+	glColor3f(1.0f, 0.0f, 0.0f);
+	for (int i=0;i<BreakPoints.size();++i)
+	{
+		glBegin(GL_LINES);
+		
+		int StartPostion=BreakPoints.at(i).GetStartPosition();
+		int EndPostion=BreakPoints.at(i).GetEndPosition();
+		float StartX=lidar_BL.m_LidarScanData.at(StartPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+		float StartY=lidar_BL.m_LidarScanData.at(StartPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+		float EndX=lidar_BL.m_LidarScanData.at(EndPostion).GetScanX()/LIDAR_DISPLAY_RANGE;	
+		float EndY=lidar_BL.m_LidarScanData.at(EndPostion).GetScanY()/LIDAR_DISPLAY_RANGE;	
+		
+		glVertex2f(StartX,StartY);
+		glVertex2f(EndX,EndY);
+		glEnd();
+	}
 
 	//***********test*******
 	glColor3f(1.0f, 0.0f, 0.0f);
@@ -232,7 +232,7 @@ int draw_main(int argc, char *argv[])
 		//此消息循环会一直循环执行，直到程序结束//
 		ClusterLidar(lidar_BL.m_LidarScanData);
 		IepfAlgorithm(lidar_BL.m_LidarScanData);
-		LeastSquareMethod(BreakPoints,lidar_BL.m_LidarScanData);
+	//	LeastSquareMethod(BreakPoints,lidar_BL.m_LidarScanData);
 		FeatureExtraction(BreakPoints,lidar_BL.m_LidarScanData,lidar_BL.m_LidarTarget);
 		
 		glutPostRedisplay();
